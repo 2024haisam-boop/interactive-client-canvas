@@ -11,5 +11,6 @@
 
 - Keep the public experience in the index route with in-page navigation because the requested customer journey must stay on one page.
 - Keep portfolio project data in a browser-safe shared module and previews in an accessible dialog; external frame restrictions must be respected, with captures clearly distinguished from live sites.
-- The contact form uses an explicitly labeled email-draft fallback until a verified sender domain permits real inbox delivery; never present a draft as a sent enquiry.
+- The contact form keeps an explicitly labeled email-draft fallback until the owner's Gmail connection is authorized; never present a draft as a sent enquiry.
+- Keep supplied testimonials in a browser-safe data module with category/rating filters and pagination, so every quote stays accessible without an oversized page; never imply third-party verification.
 - Keep all visual colors in semantic global CSS tokens and respect reduced-motion preferences for animation.
