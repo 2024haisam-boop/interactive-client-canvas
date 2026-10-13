@@ -1,24 +1,78 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router'
+import { useEffect, useState, type FormEvent } from 'react'
+import { ArrowUpRight, ArrowDown, ArrowRight, Asterisk, Check, Menu, X, Plus, Minus, Code2, ShoppingBag, MousePointer2, Search, Megaphone, TrendingUp } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { projects, type Project } from '@/lib/portfolio'
+import { ProjectPreview } from '@/components/project-preview'
+import ribbon from '@/assets/chrome-ribbon.jpg'
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
-export const Route = createFileRoute("/")({
+const services = [
+  { name: 'Conversion-focused websites', text: 'Turn a first impression into the next conversation. Fast, distinctive websites with a clear path from curiosity to enquiry.', icon: MousePointer2, tags: 'Strategy / Design / Development' },
+  { name: 'Custom web & app development', text: 'Your idea, without the template limitations. Thoughtful web experiences and applications shaped around your business.', icon: Code2, tags: 'Web apps / Interfaces / Custom builds' },
+  { name: 'E-commerce that sells', text: 'Make finding, loving, and buying your products feel effortless. Beautiful storefronts with customer-first shopping journeys.', icon: ShoppingBag, tags: 'Storefronts / Product pages / Checkout' },
+  { name: 'Social media advertising', text: 'Get in front of the right people with creative that earns attention and campaigns built around your business goals.', icon: Megaphone, tags: 'Creative / Campaigns / Optimization' },
+  { name: 'Search engine optimization', text: 'Help the right customers find you. Technical foundations, useful content, and a search strategy built for the long game.', icon: Search, tags: 'Technical SEO / Content / Search strategy' },
+  { name: 'Business growth strategy', text: 'Connect your website, marketing, and customer journey. Find the friction, focus your efforts, and build a clearer route to growth.', icon: TrendingUp, tags: 'Positioning / Customer journeys / Growth' },
+]
+const faqs = [
+  ['What can ButterLit help my business with?', 'From a new conversion-focused website to a custom web app, e-commerce store, social media campaigns, or SEO, we bring design and growth together. Tell us what your business needs and we’ll help define the right scope.'],
+  ['How much will my project cost?', 'Every project has a different scope. After learning about your goals, the pages or features you need, and your timeline, we’ll put together a tailored proposal. No made-up packages or one-size-fits-all pricing.'],
+  ['How long does a website take?', 'Timing depends on the project’s size, functionality, and how ready your content is. We agree on milestones and a realistic delivery schedule before the work begins.'],
+  ['Can you improve my existing website?', 'Yes. We can review your existing design, customer journey, performance, and search foundations, then recommend focused improvements or a rebuild where it makes sense.'],
+  ['Can you guarantee the top spot on Google?', 'No reputable SEO service can guarantee a number-one ranking. We focus on sound technical SEO, relevant content, and a useful experience. Rankings also depend on competition, authority, and changes to search engines.'],
+  ['Can I explore the portfolio without leaving this page?', 'Yes. Projects open in a centered mobile preview. Where the original website allows it, the preview is live and interactive. Sites that prevent embedding are shown as scrollable captures when available.'],
+]
+export const Route = createFileRoute('/')({
   component: Index,
-});
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
+  head: () => ({
+    meta: [
+      { title: 'ButterLit — Conversion-Focused Websites & Digital Growth' },
+      { name: 'description', content: 'ButterLit creates conversion-focused websites, custom web apps and e-commerce stores, alongside social media advertising, SEO and business growth strategy. Explore our work and start your project.' },
+      { property: 'og:title', content: 'ButterLit — Beautiful websites. Serious business.' },
+      { property: 'og:description', content: 'Conversion-focused web design, custom development, e-commerce, social advertising and SEO. Explore ButterLit’s portfolio and tell us what you’re building.' },
+      { property: 'og:type', content: 'website' }, { property: 'og:url', content: '/' }, { name: 'twitter:card', content: 'summary_large_image' },
+    ], links: [{ rel: 'canonical', href: '/' }],
+    scripts: [{ type: 'application/ld+json', children: JSON.stringify({ '@context': 'https://schema.org', '@type': 'ProfessionalService', name: 'ButterLit', description: 'Conversion-focused website development, custom web and app development, e-commerce, social media advertising, search engine optimization, and business growth strategy.', email: 'f2024-0778@bnu.edu.pk', hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Digital design and growth services', itemListElement: services.map(s => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: s.name, description: s.text } })) } }) }],
+  }),
+})
 function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
+  const [project, setProject] = useState<Project | null>(null)
+  const [filter, setFilter] = useState('All work')
+  const [expanded, setExpanded] = useState(false)
+  const [faq, setFaq] = useState<number | null>(0)
+  const [menu, setMenu] = useState(false)
+  const [service, setService] = useState('Website development')
+  const [draft, setDraft] = useState('')
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target) } }), { threshold: 0.08 })
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el))
+    return () => observer.disconnect()
+  }, [])
+  const go = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }); setMenu(false) }
+  const filtered = projects.filter(p => filter === 'All work' || p.category === filter)
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
+    const body = `Hi ButterLit,\n\nI'm ${data.get('name')}.\nEmail: ${data.get('email')}\nInterested in: ${service}\n\n${data.get('message')}\n\nLet's talk.`
+    const url = `mailto:f2024-0778@bnu.edu.pk?subject=${encodeURIComponent(`New project enquiry — ${service}`)}&body=${encodeURIComponent(body)}`
+    setDraft(url)
+    window.location.href = url
+  }
+  return <>
+    <header className="site-header"><a className="wordmark" href="#top" aria-label="ButterLit home">butterlit<Asterisk aria-hidden="true" /></a><nav aria-label="Main navigation" className={menu ? 'nav-open' : ''}>{[['Services', 'services'], ['Selected work', 'work'], ['The approach', 'approach'], ['FAQs', 'faq']].map(([label, id]) => <Button variant="ghost" key={id} onClick={() => go(id)}>{label}</Button>)}</nav><Button className="nav-cta" onClick={() => go('contact')}>Let’s talk <ArrowUpRight /></Button><Button variant="ghost" size="icon" className="mobile-menu" aria-label={menu ? 'Close menu' : 'Open menu'} onClick={() => setMenu(!menu)}>{menu ? <X /> : <Menu />}</Button></header>
+    <main>
+      <section className="hero" id="top">
+        <img className="hero-art" src={ribbon} alt="Sculptural chrome and lime ribbon intertwined in a flowing knot" width={1600} height={1008} fetchPriority="high" />
+        <div className="hero-inner"><div className="hero-eyebrow"><span className="status-dot" /> INDEPENDENT DIGITAL DESIGN & GROWTH STUDIO</div><h1><span className="sr-only">ButterLit — </span>Beautiful<br/>websites.<br/><span className="outline-type">Serious</span> business<span className="lime-dot">.</span></h1><p>We turn ambitious brands into unmissable digital<br className="desktop-break"/> experiences. Built to look good. Designed to convert.</p><div className="hero-actions"><Button className="pill-cta" onClick={() => go('contact')}>Let’s build something <ArrowUpRight /></Button><Button className="text-cta" variant="ghost" onClick={() => go('work')}>Explore our work <ArrowDown /></Button></div><div className="hero-bottom"><span><span className="status-dot"/> OPEN FOR GOOD PROJECTS</span><span>GOOD DESIGN. REAL INTENT.</span></div></div>
+        <div className="art-caption"><span>STRATEGY × DESIGN × GROWTH</span><Asterisk size={24}/></div>
+      </section>
+      <div className="marquee" aria-label="Strategy, design, development, growth"><div>{[0,1,2,3].map(i => <span key={i}>LESS ORDINARY <Asterisk/> MORE IMPACT <Asterisk/> BUILT TO CONVERT <Asterisk/></span>)}</div></div>
+      <section className="intro section-shell reveal"><span className="eyebrow">01 / THE BIG PICTURE</span><div><h2>You don’t need just<br/>another website.<br/><span className="muted-type">You need a reason to be chosen.</span></h2><p>That’s where we come in. We blend thoughtful design, purposeful development, and growth-focused marketing to help your business stand out — and move forward.</p></div><ArrowUpRight className="intro-arrow"/></section>
+      <section id="services" className="services section-shell"><div className="section-heading reveal"><div><span className="eyebrow">02 / WHAT WE DO</span><h2>Good looks.<br/>Even better outcomes.</h2></div><p>From your first click to your next customer.<br/>A connected set of services, one clear ambition.</p></div><div className="service-grid">{services.map((s,i) => <article className="service-item reveal" key={s.name}><div className="service-top"><span>0{i+1}</span><s.icon size={25}/></div><h3>{s.name}</h3><p>{s.text}</p><div className="service-bottom"><span>{s.tags}</span><Button variant="ghost" size="icon" aria-label={`Enquire about ${s.name}`} onClick={() => { setService(s.name); go('contact') }}><ArrowUpRight/></Button></div></article>)}</div></section>
+      <section id="work" className="work section-shell"><div className="section-heading reveal"><div><span className="eyebrow">03 / SELECTED WORK</span><h2>Proof, not promises<span className="lime-dot">.</span></h2></div><p>A few different worlds.<br/>The same attention to every detail.</p></div><div className="work-filters" role="group" aria-label="Filter portfolio">{['All work','Websites','E-commerce'].map(f => <Button key={f} variant="ghost" className={filter === f ? 'filter-active' : ''} onClick={() => { setFilter(f); setExpanded(false) }}>{f}{f === 'All work' && <span>09</span>}</Button>)}</div><div className="project-grid">{(expanded ? filtered : filtered.slice(0,4)).map((p,i) => <article className={`project-item project-${p.slug}`} key={p.slug}><Button className="project-cover" variant="ghost" onClick={() => setProject(p)} aria-label={`Preview ${p.name}`}><div className="browser-bar"><span className="browser-dots">● ● ●</span><span>{new URL(p.url).hostname}</span><ArrowUpRight size={13}/></div>{p.image ? <img src={p.image} loading="lazy" width={1280} height={1800} alt={`${p.name} website design — ${p.industry}`}/> : <div className="project-placeholder"><Asterisk size={65}/><span>{p.name}</span></div>}<span className="project-hover">Explore project <ArrowUpRight/></span><span className="project-number">0{i+1}</span></Button><div className="project-info"><h3>{p.name}</h3><span>{p.industry}</span><ArrowUpRight size={20}/></div></article>)}</div>{filtered.length > 4 && <Button variant="outline" className="more-work" onClick={() => setExpanded(!expanded)}>{expanded ? 'Show selected work' : `View all ${filtered.length} projects`} {expanded ? <Minus/> : <Plus/>}</Button>}</section>
+      <section id="approach" className="approach section-shell"><div className="section-heading reveal"><div><span className="eyebrow">04 / HOW WE GET THERE</span><h2>Small studio.<br/>Big-picture thinking.</h2></div><p>Less back-and-forth. More moving forward.<br/>You’re part of the process, not outside it.</p></div><div className="process-grid">{[['Discover','We get to know your business, your customers, and what success actually looks like.'],['Create','Strategy becomes structure. Structure becomes a distinctive experience with purpose.'],['Build','We develop, test, and refine the details that make your website work beautifully.'],['Move forward','Launch is a beginning. We identify next steps for your visibility and customer journey.']].map(([title,text],i) => <article className="reveal" key={title}><span className="process-number">0{i+1}</span><h3>{title}<ArrowUpRight/></h3><p>{text}</p></article>)}</div><div className="trust-line reveal"><Asterisk/><h3>A partner in your corner.<br/><span>Not another name in your inbox.</span></h3><div>{['Direct communication','A clear, agreed scope','Design with business intent'].map(t=><span key={t}><Check size={16}/>{t}</span>)}</div></div></section>
+      <section id="faq" className="faq section-shell"><div className="faq-heading reveal"><span className="eyebrow">05 / A FEW GOOD QUESTIONS</span><h2>Let’s clear<br/>things up.</h2><p>Still have something on your mind?</p><Button variant="link" onClick={() => go('contact')}>Ask us directly <ArrowUpRight/></Button></div><div className="faq-list">{faqs.map(([question,answer],i)=><div className="faq-item" key={question}><Button variant="ghost" aria-expanded={faq === i} aria-controls={`faq-${i}`} onClick={()=>setFaq(faq === i ? null : i)}><span>{question}</span>{faq === i ? <Minus/>:<Plus/>}</Button><div id={`faq-${i}`} className={`faq-answer ${faq === i ? 'answer-open' : ''}`}><div><p>{answer}</p></div></div></div>)}</div></section>
+      <section id="contact" className="contact section-shell"><div className="contact-copy reveal"><span className="eyebrow">06 / YOUR NEXT CHAPTER</span><h2>Have a good<br/>feeling about<br/>this<span>?</span></h2><p>Tell us a little about what you’re building.<br/>Let’s see what we can make happen.</p><div className="contact-email">f2024-0778@bnu.edu.pk <ArrowUpRight size={17}/></div><div className="contact-footnote"><span className="status-dot"/> REAL CONVERSATIONS. NO PRESSURE.</div></div><form onSubmit={submit} className="contact-form"><div className="form-row"><label>Your name<input name="name" autoComplete="name" required placeholder="Alex, for example" maxLength={100}/></label><label>Email address<input name="email" type="email" autoComplete="email" required placeholder="you@company.com" maxLength={200}/></label></div><fieldset><legend>I’m interested in...</legend><div className="service-choices">{['Website development','E-commerce','Web / app development','SEO','Social media ads','Growth strategy'].map(s=><Button type="button" key={s} variant="outline" aria-pressed={service === s} className={service === s ? 'choice-selected' : ''} onClick={()=>setService(s)}>{s}</Button>)}</div></fieldset><label>A little about your project<textarea name="message" required placeholder="The idea, the ambition, the thing keeping you up at night..." rows={3} maxLength={4000}/></label><Button type="submit" className="form-submit">Let’s start a conversation <ArrowUpRight/></Button><p className="form-note">Opens an email draft with your project details. Nothing is sent until you send it.</p>{draft && <p className="draft-status" role="status">Your email draft is ready. <a href={draft}>Open it again</a> if your email app didn’t appear.</p>}</form></section>
+    </main><footer className="site-footer"><div><a className="wordmark" href="#top">butterlit<Asterisk/></a><p>A little different. A lot more intentional.</p></div><span>© {new Date().getFullYear()} ButterLit</span><Button variant="ghost" onClick={()=>go('top')}>Back to top <ArrowUpRight/></Button></footer><ProjectPreview project={project} onClose={()=>setProject(null)}/>
+  </>
 }
