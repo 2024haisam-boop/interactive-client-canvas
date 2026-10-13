@@ -59,7 +59,7 @@ function Index() {
     window.location.href = url
   }
   return <>
-    <header className="site-header"><a className="wordmark" href="#top" aria-label="ButterLit home">butterlit<Asterisk aria-hidden="true" /></a><nav aria-label="Main navigation" className={menu ? 'nav-open' : ''}>{[['Services', 'services'], ['Selected work', 'work'], ['The approach', 'approach'], ['FAQs', 'faq']].map(([label, id]) => <Button variant="ghost" key={id} onClick={() => go(id)}>{label}</Button>)}</nav><Button className="nav-cta" onClick={() => go('contact')}>Let’s talk <ArrowUpRight /></Button><Button variant="ghost" size="icon" className="mobile-menu" aria-label={menu ? 'Close menu' : 'Open menu'} onClick={() => setMenu(!menu)}>{menu ? <X /> : <Menu />}</Button></header>
+    <header className="site-header"><a className="wordmark" href="#top" aria-label="ButterLit home">butterlit<Asterisk aria-hidden="true" /></a><nav aria-label="Main navigation" className={menu ? 'nav-open' : ''}>{([['Services', 'services'], ['Selected work', 'work'], ['The approach', 'approach'], ['FAQs', 'faq']] as const).map(([label, id]) => <Button variant="ghost" key={id} onClick={() => go(id)}>{label}</Button>)}</nav><Button className="nav-cta" onClick={() => go('contact')}>Let’s talk <ArrowUpRight /></Button><Button variant="ghost" size="icon" className="mobile-menu" aria-label={menu ? 'Close menu' : 'Open menu'} onClick={() => setMenu(!menu)}>{menu ? <X /> : <Menu />}</Button></header>
     <main>
       <section className="hero" id="top">
         <img className="hero-art" src={ribbon} alt="Sculptural chrome and lime ribbon intertwined in a flowing knot" width={1600} height={1008} fetchPriority="high" />
