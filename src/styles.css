@@ -40,6 +40,7 @@
 .phone-frame iframe { display:block; }.preview-note { padding:8px 15px; background:var(--background); min-height:35px; }
 .preview-scroll-hint { position:absolute; z-index:4; bottom:18px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:10px; white-space:nowrap; background:var(--window-overlay); color:var(--inverse-foreground); padding:11px 17px; border-radius:99px; font-size:12px; font-weight:600; pointer-events:none; }
 .preview-scroll-hint svg { animation:scroll-nudge 1.8s ease-in-out infinite; }
+.phone-frame.capture-frame { height:min(590px,110vw,calc(94dvh - 138px)); }
 @keyframes scroll-nudge { 50% { transform:translateY(4px); } }
 /* Client stories */
 .testimonials { background:var(--background); border-bottom:1px solid var(--border); }

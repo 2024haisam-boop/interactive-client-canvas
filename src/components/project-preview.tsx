@@ -14,11 +14,11 @@ export function ProjectPreview({ project, onClose }: { project: Project | null; 
         {project?.live && <Button variant={mode === 'live' ? 'secondary' : 'ghost'} size="icon" title="Live mobile website" aria-label="Live mobile website" onClick={() => { setMode('live'); setLoading(true) }}><Smartphone /></Button>}
         {project?.image && <Button variant={mode === 'snapshot' ? 'secondary' : 'ghost'} size="icon" title="Website capture" aria-label="Website capture" onClick={() => setMode('snapshot')}><Image /></Button>}
       </div></div>
-      <div className="phone-frame">
+      <div className={`phone-frame ${project?.live && mode === 'live' ? '' : 'capture-frame'}`}>
         {project?.live && mode === 'live' ? <>{loading && <div className="frame-loading"><LoaderCircle className="animate-spin" /> Loading website</div>}<iframe key={project.slug} src={project.url} title={`${project.name} live mobile website`} onLoad={() => setLoading(false)} referrerPolicy="strict-origin-when-cross-origin" /></> : <div className="snapshot-scroll">{project?.image ? <img src={project.image} alt={`${project.name} website capture`} /> : <div className="unavailable"><Globe size={36}/><h3>{project?.name}</h3><p>A preview is currently unavailable.</p><span>{project?.url}</span></div>}</div>}
         {(project?.live || project?.image) && <span className="preview-scroll-hint" aria-hidden="true">Scroll to explore <ArrowDown size={16}/></span>}
       </div>
-      <p className="preview-note">{project?.live && mode === 'live' ? 'Live website · Some third-party features may be limited in this view. If it doesn’t load, select the capture above.' : project?.image ? 'Scrollable website capture · This website blocks live embedding.' : 'This website is unavailable or prevents embedded previews.'}</p>
+      <p className="preview-note">{project?.live && mode === 'live' ? 'Live website · Some third-party features may be limited in this view. If it doesn’t load, select the capture above.' : project?.image ? project.live ? 'Scrollable website capture · A saved view, not the live website.' : 'Scrollable website capture · This website blocks live embedding.' : 'This website is unavailable or prevents embedded previews.'}</p>
     </DialogContent>
   </Dialog>
 }
