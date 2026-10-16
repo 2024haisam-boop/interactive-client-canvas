@@ -1,4 +1,5 @@
-# ButterLit
+# Forthmotive
+
 - [x] Build animated single-page design, services, portfolio, trust section, FAQ and short contact form.
 - [x] Verify real project previews and handle external embedding restrictions; HORNE live scroll verified, blocked sites use captures, unavailable sites are labeled.
 - [x] Add accurate search and social metadata, semantic content and structured data; sitemap awaits a public domain.
